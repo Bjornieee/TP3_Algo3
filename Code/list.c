@@ -8,7 +8,6 @@
 /*-----------------------------------------------------------------*/
 #include <stdlib.h>
 #include <assert.h>
-#include <stdio.h>
 #include "list.h"
 
 #define SIZE l->sentinel->value
@@ -214,74 +213,65 @@ SubList *list_split(SubList *l){
 }
 
 /*-----------------------------------------------------------------*/
+void addToList(SubList* l, LinkedElement *e) {
+    //if (e->next != NULL)
+        //e->next = NULL;
+    if (l->head == NULL){
+        l->head = e;
+        l->tail = e;
+        e->previous = NULL;
+    }
+    else {
+        l->tail->next = e;
+        e->previous = l->tail;
+        l->tail = l->tail->next;
+    }
+}
 
-SubList *list_merge(SubList *leftlist, SubList *rightlist, OrderFunctor f){
-    SubList *sublist = malloc(sizeof(SubList)); //Creation de la liste triée qui sera retournée
-    sublist->head=NULL, sublist->tail=NULL;
-    while(leftlist->head!=NULL || rightlist->head!=NULL) {
-        if(leftlist->head==NULL) {
-            sublist->tail->next=rightlist->head;
-            sublist->tail->next->previous = sublist->tail;
-            sublist->tail=rightlist->tail;
-            sublist->tail->next=NULL;
-            rightlist->head=NULL,rightlist->tail=NULL;
-        } else if(rightlist->head==NULL) {
-            sublist->tail->next=leftlist->head;
-            sublist->tail->next->previous = sublist->tail;
-            sublist->tail=leftlist->tail;
-            leftlist->head=NULL,leftlist->tail=NULL;
-        } else if(f(leftlist->head->value,rightlist->head->value)) {
-            if(sublist->head==NULL){
-                sublist->head=leftlist->head;
-                sublist->tail=leftlist->head;
-                sublist->head->previous = NULL;
-            } else {
-                sublist->tail->next=leftlist->head;
-                sublist->tail->next->previous = sublist->tail;
-                sublist->tail=sublist->tail->next;
-            }
-            leftlist->head = leftlist->head->next;
-        } else {
-            if(sublist->head==NULL){
-                sublist->head=rightlist->head;
-                sublist->tail=rightlist->head;
-                sublist->head->previous = NULL;
-                printf("%d\n",sublist->head->value);
-            } else {
-                sublist->tail->next=rightlist->head;
-                sublist->tail->next->previous = sublist->tail;
-                sublist->tail=sublist->tail->next;
-            }
+SubList* list_merge(SubList* leftlist, SubList* rightlist, OrderFunctor f) {
+    SubList *l = malloc(sizeof(SubList));
+    while(leftlist->head != NULL || rightlist->head != NULL) {
+        if(leftlist->head == NULL) {
+            addToList(l, rightlist->head);
             rightlist->head = rightlist->head->next;
         }
+        else if(rightlist->head == NULL) {
+            addToList(l, leftlist->head);
+            leftlist->head = leftlist->head->next;
+        }
+        else {
+            if (f(leftlist->head->value, rightlist->head->value)) {
+                addToList(l, leftlist->head);
+                leftlist->head = leftlist->head->next;
+            }
+            else {
+                addToList(l, rightlist->head);
+                rightlist->head = rightlist->head->next;
+            }
+        }
     }
-    free(leftlist);
-    free(rightlist);
-    return sublist;
+    return l;
 }
 
 /*-----------------------------------------------------------------*/
 
-SubList *list_mergesort(SubList *l, OrderFunctor f){
-    if(l->head!=l->tail) {
-        SubList *left = malloc(sizeof(SubList));
-        SubList *right = malloc(sizeof(SubList));
-        SubList *splited = list_split(l);
-        left->head = l->head;
-        left->tail = splited->head;
-        right->head = splited->tail;
-        free(splited);
-        right->tail = l->tail;
-        left->tail->next=NULL;
-        right->head->previous=NULL;
-        right = list_mergesort(right, f);
-        left = list_mergesort(left, f);
-        SubList *mergedlist = list_merge(left,right,f);
-        mergedlist->head->previous=NULL;
-        mergedlist->tail->next=NULL;
-        return mergedlist;
+SubList* list_mergesort(SubList* l, OrderFunctor f) {
+    if(l->head == l->tail) {
+        return l;
     }
-    return l;
+    else {
+        SubList* leftl = malloc(sizeof(SubList));
+        SubList* rightl = malloc(sizeof(SubList));
+        SubList* split;
+        split = list_split(l);
+        leftl->head = l->head;
+        leftl->tail = split->head;
+        leftl->tail->next = NULL;
+        rightl->head = split->tail;
+        rightl->tail= l->tail;
+        rightl->head->previous = NULL;
+        return list_merge(list_mergesort(leftl, f), list_mergesort(rightl, f), f);
+    }
 }
 
 /*-----------------------------------------------------------------*/
@@ -306,3 +296,4 @@ List *list_sort(List *l, OrderFunctor f){
 }
 
 /*-----------------------------------------------------------------*/
+
