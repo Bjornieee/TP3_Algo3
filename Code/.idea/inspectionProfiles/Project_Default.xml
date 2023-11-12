@@ -1,0 +1,9 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="Misra" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="myMisraCChecks" value="-clion-misra-c2012-*" />
+    </inspection_tool>
+    <inspection_tool class="OCInconsistentNaming" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
+  </profile>
+</component>
