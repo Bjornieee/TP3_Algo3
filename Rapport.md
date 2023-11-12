@@ -12,6 +12,10 @@ __structure Sublist :__
   - La structure est uniquement défini dans le .c car elle n'a aucun intérêt pour l'utilisateur et s'il y a accès il risque juste d'invalider les invariants comme la taille par exemple.
   - Toutes les fonctions qui utilisent la sublist sont donc inconnus à l'utilisateur et pas définis dans le .h
 
+
+__*fonction SubList *list_split(SubList *l)*__
+  - la sublist l est laissé intacte afin de ne pas devoir parcourir la liste renvoyé dans la fonction list_mergesort ce qui nous donne une complexite O(1) au lieu de O(n/2) pour cette partie.
+
 __*Description du comportement sur les jeux de tests fournis*__
 
 - Tous les jeux de test ont été validés
