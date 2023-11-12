@@ -270,7 +270,6 @@ SubList *list_mergesort(SubList *l, OrderFunctor f){
         right->head = splited->tail;
         free(splited);
         right->tail = l->tail;
-        free(l);
         left->tail->next=NULL;
         right->head->previous=NULL;
         right = list_mergesort(right, f);
@@ -278,6 +277,7 @@ SubList *list_mergesort(SubList *l, OrderFunctor f){
         SubList *mergedlist = list_merge(left,right,f);
         mergedlist->head->previous=NULL;
         mergedlist->tail->next=NULL;
+        free(l);
         return mergedlist;
     }
     return l;
